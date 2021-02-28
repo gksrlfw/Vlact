@@ -22,7 +22,6 @@
       class="flex justify-between ml-3 text-left font-semibold px-4 py-2 mt-2 rounded-lg hover:bg-blue-100 focus:bg-gray-300 focus:outline-none focus:shadow-outline"
       @click="onClickUser(route.params.channel + data.id)"
     >
-      <!-- <router-link :to="`/workspace/${route.params.workspace}/${route.params.channel}/${data.nickname}`">{{ -->
       <router-link
         :to="{
           name: 'DM',
@@ -31,7 +30,12 @@
         class="w-full"
         >{{ data.nickname }}</router-link
       >
-      <IconUser :id="route.params.channel + data.id" class="w-4 h-4 mt-1" />
+      <IconUser
+        :id="route.params.channel + data.id"
+        class="w-4 h-4 mt-1 text-green-300"
+        v-if="checkOnlineList(data.id)"
+      />
+      <IconUser :id="route.params.channel + data.id" class="w-4 h-4 mt-1" v-else />
     </div>
   </div>
   <DMInfo
@@ -45,11 +49,13 @@
 import axios from 'axios';
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { axiosOptions, BASE_URL } from '@/store/GlobalVariable';
+import { axiosOptions, BASE_URL, globalChannels } from '@/store/GlobalVariable';
 import DMInfo from '@/components/Modal/DMInfo';
 import AccodionButton from '@/components/Button/AccodionButton';
 import IconUserAdd from '@/components/Icons/IconUserAdd';
 import IconUser from '@/components/Icons/IconUser';
+import socketStore from '@/store/SocketStore';
+import authStore from '@/store/AuthStore';
 
 export default {
   components: {
@@ -64,6 +70,9 @@ export default {
     const currentMembers = ref([]);
     const toggleAccordion = ref(false);
     const currentUser = ref('');
+    const onlineList = socketStore.getOnlineList();
+    const authState = authStore.getAuthState();
+    let [socket, disconnect] = ['', ''];
 
     async function getMembers() {
       try {
@@ -81,10 +90,37 @@ export default {
     watch(
       () => route.params.channel,
       async () => {
-        if (!route.params.channel) currentMembers.value = [];
-        else await getMembers();
+        if (!route.params.channel) {
+          currentMembers.value = [];
+          return;
+        }
+        await getMembers();
       },
     );
+
+    // socket
+    watch(
+      () => route.params.channel,
+      () => {
+        if (!route.params.workspace) return;
+        [socket, disconnect] = socketStore.useSocket(route.params.workspace);
+        if (!route.params.channel || !socket) return;
+        socketStore.emitLoginUser(socket, {
+          id: authState.loginResponse.id,
+          channels: globalChannels.value.map(v => v.id),
+        });
+        socketStore.onOnlineList(socket);
+      },
+    );
+
+    function checkOnlineList(curId) {
+      let ok = false;
+      if (!onlineList.value) return;
+      onlineList.value.map(user => {
+        if (Number(user) === Number(curId)) ok = true;
+      });
+      return ok;
+    }
 
     function onClickDMOpen() {
       showDMModal.value = true;
@@ -130,6 +166,8 @@ export default {
       currentMembers,
       toggleAccordion,
       onClickUser,
+      onlineList,
+      checkOnlineList,
     };
   },
 };

@@ -32,7 +32,6 @@ export class AuthStore {
   public async getAllInfo() {
     try {
       const response = await axios.get(`${BASE_URL}/users`, axiosOptions);
-      console.log(response, response.data);
       return response.data
     }
     catch(err) {

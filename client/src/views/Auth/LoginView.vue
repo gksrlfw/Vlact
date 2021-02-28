@@ -63,7 +63,6 @@ export default {
         if (!checkValidation()) return;
         const data = { email: email.value, password: password.value };
         await authStore.login(data);
-        console.log(authState);
         if (authState.loginError) return;
         return router.push({ name: 'Workspace' });
       } catch (err) {

@@ -26,9 +26,9 @@
   />
 </template>
 <script>
+import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
 import { BASE_URL, axiosOptions } from '@/store/GlobalVariable';
 import authStore from '@/store/AuthStore';
 import IconPlus from '@/components/Icons/IconPlus';
@@ -46,7 +46,6 @@ export default {
 
     onMounted(async () => {
       authState.loginResponse = await authStore.getAllInfo();
-      console.log(authState.loginResponse);
     });
 
     function onClickCreateWorkspaceOpen() {

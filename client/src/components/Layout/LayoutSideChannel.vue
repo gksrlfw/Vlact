@@ -22,9 +22,15 @@
       class="flex justify-between ml-3 text-left font-semibold px-4 py-2 mt-2 rounded-lg hover:bg-blue-100 focus:bg-gray-300 focus:outline-none focus:shadow-outline"
       @click="onSelectChannel(route.params.workspace + data.id)"
     >
-      <router-link :to="`/workspace/${route.params.workspace}/${data.name}`" class="w-full">{{
-        data.name
-      }}</router-link>
+      <!--:to="`/workspace/${route.params.workspace}/${data.name}`"  -->
+      <router-link
+        :to="{
+          name: 'Channel',
+          params: { workspace: route.params.workspace, channel: data.name },
+        }"
+        class="w-full"
+        >{{ data.name }}</router-link
+      >
       <IconCheckCircle :id="route.params.workspace + data.id" class="w-4 h-4 mt-1 hidden text-red-500" />
     </div>
   </div>
@@ -36,14 +42,15 @@
   />
 </template>
 <script>
+import axios from 'axios';
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import axios from 'axios';
-import { axiosOptions, BASE_URL } from '@/store/GlobalVariable';
+import { axiosOptions, BASE_URL, globalChannels } from '@/store/GlobalVariable';
 import ChannelInfo from '@/components/Modal/ChannelInfo';
 import AccodionButton from '@/components/Button/AccodionButton';
 import IconPlus from '@/components/Icons/IconPlus';
 import IconCheckCircle from '@/components/Icons/IconCheckCircle';
+import authStore from '@/store/AuthStore';
 
 export default {
   components: {
@@ -58,11 +65,12 @@ export default {
     const currentChannels = ref([]);
     const toggleAccordion = ref(false);
     const currentChannel = ref('');
-
+    
     async function getChannels() {
       try {
         const response = await axios.get(`${BASE_URL}/workspaces/${route.params.workspace}/channels`, axiosOptions);
         currentChannels.value = response.data;
+        globalChannels.value = response.data;
       } catch (err) {
         console.error(err.response);
       }

@@ -59,8 +59,11 @@ export default {
     async function pushChatData(currentValue) {
       try {
         if (currentValue?.trim()) {
+          const data = { content: currentValue };
+          console.log('curV', data);
           await axios.post(
-            `${BASE_URL}/workspaces/${route.params.workspace}/dms/${route.params.id}/chats`,
+            `${BASE_URL}/workspaces/${route.params.workspace}/dms/${route.params.id}/chat`,
+            data,
             axiosOptions,
           );
         }
