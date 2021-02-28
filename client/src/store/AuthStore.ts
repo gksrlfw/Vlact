@@ -104,8 +104,6 @@ export class AuthStore {
   private succeedLogin(loginResponse: any) {    
     this.authState.loginResponse = loginResponse;
     this.authState.isLogin = true;
-    console.log(this.authState.loginResponse);
-    
   }
 
   private succeedRegister() {

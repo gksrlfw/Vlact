@@ -1,5 +1,5 @@
 <template lang="">
-  <div class="h-32">
+  <div class="h-32 py-10 px-20">
     <div class="flex ml-80 items-center text-bolder text-3xl">
       <h3 v-if="route.params.workspace">{{ route.params.workspace }}</h3>
       <h3 v-if="route.params.channel">>> {{ route.params.channel }}</h3>

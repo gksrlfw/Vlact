@@ -8,7 +8,7 @@
         v-model="currentValue"
         @keyup.enter="onKeyUpChat"
       />
-      <div class="p-2 rounded-lg flex justify-end ">
+      <div class="p-2 rounded-lg flex justify-end bg-blue-100">
         <ModalButton class="font-bold" content="SEND" />
       </div>
     </div>

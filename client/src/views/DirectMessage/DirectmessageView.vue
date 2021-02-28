@@ -1,18 +1,6 @@
 <template lang="">
   <div class="md:container mx-auto pl-20 pr-32 h-full">
-    <header class="flex justify-between">
-      <div class="">
-        <img :src="gravatar.url(userData.email, { s: '24px', d: 'retro' })" :alt="userData.nickname" />
-        <span>{{ userData.nickname }}</span>
-      </div>
-      <div class="">
-        <img
-          :src="gravatar.url(authState.loginResponse.email, { s: '24px', d: 'retro' })"
-          :alt="authState.loginResponse.nickname"
-        />
-        <span>{{ authState.loginResponse.nickname }}</span>
-      </div>
-    </header>
+    <DirectmessageHeader :user-data="userData" :auth-state="authState" />
     <ChatList class="" />
     <ChatBox class="" @on-key-up-chat="onKeyUpChat" />
   </div>
@@ -26,13 +14,15 @@ import { axiosOptions, BASE_URL } from '@/store/GlobalVariable';
 import authStore from '@/store/AuthStore';
 import ChatBox from '@/components/ChatBox/ChatBox';
 import ChatList from '@/components/ChatList/ChatList';
+import DirectmessageHeader from '@/views/DirectMessage/DirectmessageHeader';
 export default {
-  components: { ChatBox, ChatList },
+  components: { ChatBox, ChatList, DirectmessageHeader },
   setup() {
     const route = useRoute();
     const authState = authStore.getAuthState();
     const userData = ref('');
     const chatDatas = ref('');
+
     async function getUserData() {
       try {
         const response = await axios.get(
@@ -50,7 +40,6 @@ export default {
         await getUserData();
       },
     );
-
     async function getChatData() {
       try {
         const response = await axios.post(
