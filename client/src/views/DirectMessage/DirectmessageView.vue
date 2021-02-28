@@ -8,7 +8,7 @@
 <script>
 import gravatar from 'gravatar';
 import axios from 'axios';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { axiosOptions, BASE_URL } from '@/store/GlobalVariable';
 import authStore from '@/store/AuthStore';
@@ -34,10 +34,13 @@ export default {
         console.error(err);
       }
     }
+    onMounted(async () => {
+      if (route.params.id) await getUserData();
+    });
     watch(
       () => route.params.id,
       async () => {
-        await getUserData();
+        if (route.params.id) await getUserData();
       },
     );
     async function getChatData() {
