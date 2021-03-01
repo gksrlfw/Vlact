@@ -1,7 +1,7 @@
 <template lang="">
   <div class="md:container mx-auto pl-20 pr-32 h-full">
     <ChannelHeader />
-    <ChatList class="" :chat-datas="chatDatas" id="scrollbarRef" />
+    <ChatList class="" :chat-datas="chatDatas" :scrollbar-ref="scrollbarRef" id="scrollbarRef" />
     <ChatBox class="" @on-key-up-chat="onKeyUpChat" />
   </div>
 </template>
@@ -10,7 +10,7 @@ import gravatar from 'gravatar';
 import axios from 'axios';
 import { onMounted, ref, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { axiosOptions, BASE_URL, PAGE_SIZE } from '@/store/GlobalVariable';
+import { axiosOptions, BASE_URL, globalChatDatas, globalRef, PAGE_SIZE } from '@/store/GlobalVariable';
 import authStore from '@/store/AuthStore';
 import ChatBox from '@/components/ChatBox/ChatBox';
 import ChatList from '@/components/ChatList/ChatList';
@@ -38,7 +38,7 @@ export default {
     async function getChatDataByScrolling() {
       try {
         const response = await axios.get(
-          `${BASE_URL}/workspaces/${route.params.workspace}/dms/${route.params.id}/chats?perPage=${PAGE_SIZE}&page=${page.value}`,
+          `${BASE_URL}/workspaces/${route.params.workspace}/channels/${route.params.channel}/chats?perPage=${PAGE_SIZE}&page=${page.value}`,
           axiosOptions,
         );
         page.value += 1;
@@ -57,7 +57,6 @@ export default {
 
     async function getChatData() {
       try {
-        console.log('aaa');
         const response = await axios.get(
           `${BASE_URL}/workspaces/${route.params.workspace}/channels/${
             route.params.channel
@@ -65,8 +64,7 @@ export default {
           axiosOptions,
         );
         chatDatas.value = response.data;
-        console.log(chatDatas.value);
-        // scrollbarRef.scrollTo(0, scrollbarRef.scrollHeight);
+        scrollbarRef.scrollTo(0, scrollbarRef.scrollHeight);
       } catch (err) {
         console.error(err.response);
       }
@@ -89,12 +87,9 @@ export default {
 
     async function onKeyUpChat({ currentValue }) {
       await pushChatData(currentValue);
-      await getChatData();
+      // await getChatData();
     }
 
-    // scrollTop: 현재 높이, scrollHeight: 전체 높이
-    // curPercent = a/b * 100 -> nextLoc 구할 수 있다
-    // 15% 이내로되면 요청 ->
     function onScrollingToTop() {
       let currentLoc = null;
       let nextLoc = null;
@@ -108,24 +103,32 @@ export default {
     }
 
     onMounted(async () => {
-      if (!route.params.id) return;
       scrollbarRef = document.getElementById('scrollbarRef');
       onScrollingToTop();
-      await getChatData();
     });
 
-    // watch(
-    //   () => route.params.id,
-    //   async () => {
-    //     if (!route.params.id) return;
-    //     await getUserData();
-    //     await getChatData();
-    //     // if (offMessage.value) offMessage.value();
-    //     [socket, disconnect] = socketStore.useSocket(route.params.workspace);
-    //     socketStore.onM();
-    //     socketStore.onMessage(socket);
-    //   },
-    // );
+    watch(
+      () => route.params.channel,
+      async () => {
+        if (!route.params.channel) return;
+        await getChatData();
+        scrollbarRef.scrollTo(0, scrollbarRef.scrollHeight);
+      },
+      { immediate: true },
+    );
+
+    watch(
+      () => globalChatDatas.value.content,
+      async () => {
+        if (globalChatDatas.value.Channel.name !== route.params.channel) return;
+        chatDatas.value.unshift(globalChatDatas.value);
+        console.log(chatDatas.value, route.params.channel);
+        setTimeout(() => {
+          scrollbarRef.scrollTo(0, scrollbarRef.scrollHeight);
+        }, 0);
+      },
+      { deep: true },
+    );
 
     return {
       userData,

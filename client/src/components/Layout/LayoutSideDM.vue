@@ -49,7 +49,7 @@
 import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { axiosOptions, BASE_URL, globalChannels, globalMembers } from '@/store/GlobalVariable';
+import { axiosOptions, BASE_URL, globalChannels, globalChatDatas, globalMembers } from '@/store/GlobalVariable';
 import DMInfo from '@/components/Modal/DMInfo';
 import AccodionButton from '@/components/Button/AccodionButton';
 import IconUserAdd from '@/components/Icons/IconUserAdd';
@@ -114,6 +114,7 @@ export default {
           id: authState.loginResponse.id,
           channels: globalChannels.value.map(v => v.id),
         });
+        socketStore.onMessageChannel(socket);
         offOnlineList.value = socketStore.onOnlineList(socket);
         // offMessage.value = socketStore.onMessage(socket);
       },

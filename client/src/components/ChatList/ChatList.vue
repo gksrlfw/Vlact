@@ -39,6 +39,7 @@ import authStore from '@/store/AuthStore';
 import gravatar from 'gravatar';
 import dayjs from 'dayjs';
 import divideSection from '@/components/ChatList/daySection';
+import { globalChatDatas, globalRef } from '@/store/GlobalVariable';
 export default {
   props: ['chatDatas'],
 
@@ -52,11 +53,14 @@ export default {
       () => chatDatas.value,
       () => {
         // displayChats.value = [].concat(...chatDatas.value).reverse();
+        console.log('왜 안되니!!!!');
         if (!chatDatas.value) return;
         displayChats.value = [...chatDatas.value].reverse();
         chatSections.value = divideSection(displayChats.value);
       },
+      { deep: true },
     );
+
     return {
       authState,
       displayChats,

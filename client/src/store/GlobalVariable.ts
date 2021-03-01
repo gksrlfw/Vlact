@@ -12,3 +12,5 @@ export const axiosOptions = {
 
 export const globalChannels = ref('');
 export const globalMembers = ref('');
+export const globalChatDatas = ref([]);
+export const globalRef = ref([]);

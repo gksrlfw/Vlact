@@ -1,5 +1,5 @@
 import io from 'socket.io-client';
-import { SOCKET_URL } from '@/store/GlobalVariable';
+import { globalChatDatas, SOCKET_URL } from '@/store/GlobalVariable';
 import { ref, reactive } from 'vue';
 
 
@@ -75,10 +75,6 @@ export class SocketStore {
     }
   }
 
-  onM() {
-    console.log('onM');
-    
-  }
   onMessage(socket: any) {
     console.log('???', socket);
     if(!socket) return;
@@ -88,6 +84,18 @@ export class SocketStore {
     });
     return () => {
       socket.off('dm');
+    }
+  }
+
+  onMessageChannel(socket: any) {
+    if(!socket) return;
+    socket.on('message', (data: never) => {
+      // if (data.SenderId !== Number(id) || userid === Number(id)) return;
+      // globalChatDatas.value.unshift(data);
+      globalChatDatas.value = data;      
+    });
+    return () => {
+      socket.off('message');
     }
   }
   // onMessageT(socket: any, id: any, userid: any, chatDatas: any) {
