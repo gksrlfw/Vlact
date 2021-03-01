@@ -47,7 +47,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { axiosOptions, BASE_URL, globalChannels } from '@/store/GlobalVariable';
 import DMInfo from '@/components/Modal/DMInfo';
@@ -104,8 +104,8 @@ export default {
     watch(
       () => route.params.channel,
       () => {
-        if (offOnlineList.value) offOnlineList.value();
-        if (offMessage.value) offMessage.value();
+        // if (offOnlineList.value) offOnlineList.value();
+        // if (offMessage.value) offMessage.value();
         if (!route.params.workspace) return;
         [socket, disconnect] = socketStore.useSocket(route.params.workspace);
         if (!route.params.channel || !socket || !globalChannels.value) return;
@@ -114,7 +114,7 @@ export default {
           channels: globalChannels.value.map(v => v.id),
         });
         offOnlineList.value = socketStore.onOnlineList(socket);
-        offMessage.value = socketStore.onMessage(socket);
+        // offMessage.value = socketStore.onMessage(socket);
       },
     );
 

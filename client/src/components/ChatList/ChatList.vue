@@ -40,30 +40,14 @@ import gravatar from 'gravatar';
 import dayjs from 'dayjs';
 import divideSection from '@/components/ChatList/daySection';
 export default {
-  props: {
-    chatDatas: {
-      type: [],
-    },
-    scrollbarRef: {
-      type: String,
-    },
-  },
+  props: ['chatDatas'],
 
   setup(props) {
-    const { chatDatas, scrollbarRef } = toRefs(props);
-    const displayChats = ref('');
-    const chatSections = ref('');
+    const { chatDatas } = toRefs(props);
+    const displayChats = ref([]);
+    const chatSections = ref([]);
     const authState = authStore.getAuthState();
-    // const scrollbarRef = ref(null);
-    function onScrollTop() {
-      console.log('???'.scrollbarRef);
-      scrollbarRef.addEventListener('scroll', e => {
-        console.log('ee');
-      });
-    }
-    onMounted(() => {
-      // onScrollTop();
-    });
+
     watch(
       () => chatDatas.value,
       () => {

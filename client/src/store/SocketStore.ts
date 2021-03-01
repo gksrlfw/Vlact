@@ -7,10 +7,21 @@ export class SocketStore {
   private sockets: { [key: string]: SocketIOClient.Socket } = reactive({});
   private disconnect = reactive({});
   private onlineList = ref('');
+  private newChat = ref(null);
+
+  onDisconnect(socket: any) {
+    return () => {
+        socket.emit('disconnect', () => {
+        console.log('연결종료');
+      });
+    }
+  }
 
   private disconnected(workspace: string, disconnect: any) {
     if(workspace && this.sockets[workspace]) {      
-      disconnect = this.sockets[workspace].disconnect;
+      disconnect = this.sockets[workspace].disconnect();
+      // disconnect = this.onDisconnect(this.sockets[workspace]);
+      console.log(disconnect);
       delete this.sockets[workspace];
     }
   }
@@ -30,11 +41,17 @@ export class SocketStore {
     return [this.sockets[workspace], this.disconnect];
   }
 
+  getNewChat() {
+    return this.newChat;
+  }
+
   useSocket(workspace: string): [SocketIOClient.Socket | undefined, any] {
     if(!workspace) return [undefined, this.disconnect];
     this.disconnected(workspace, this.disconnect);
 
     if(!this.sockets[workspace]) {
+      console.log("여기오니??");
+      
       this.sockets[workspace] = io.connect(`${SOCKET_URL}/ws-${workspace}`, {
         transports: ['websocket']
       });
@@ -58,15 +75,38 @@ export class SocketStore {
     }
   }
 
+  onM() {
+    console.log('onM');
+    
+  }
   onMessage(socket: any) {
+    console.log('???', socket);
     if(!socket) return;
-    socket.on('dm', (data: any) => {
-      console.log('on dm', data);
+    socket.on('dm', (data: any) =>{
+      console.log('data', data);
+      this.newChat.value = data;
     });
     return () => {
       socket.off('dm');
     }
   }
+  // onMessageT(socket: any, id: any, userid: any, chatDatas: any) {
+  //   console.log('???',socket);
+    
+  //   if(!socket) return;
+  //   socket.on('dm', (data: any) => {
+  //     this.onTrigger(data, id, userid, chatDatas)
+  //   });
+  //   return () => {
+  //     socket.off('dm');
+  //   }
+  // }
+  // onTrigger(data: any, id: any, userid: any, chatDatas: any) {
+  //   console.log(data.SenderId, id, userid);
+  //   if (data.SenderId !== Number(id) || userid === Number(id)) return;
+  //   chatDatas.value.unshift(data);
+  //   console.log(chatDatas.value[0]);
+  // }
 }
 
 const socketStore = new SocketStore();
