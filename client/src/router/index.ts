@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [
+  // {
+  //   path: '/',
+  //   name: 'Main',
+  //   component: () => import("@/views/Main/Main.vue")
+  // },
   {
     path: '/',
-    name: 'Main',
-    component: () => import("@/views/Main/Main.vue")
-  },
-  {
-    path: '/login',
     name: 'Login',
     component: () => import("@/views/Auth/LoginView.vue")
   },

@@ -50,12 +50,21 @@ export class SocketStore {
   onOnlineList(socket: any) {
     if(!socket) return;
     socket.on('onlineList', (data: any) => {
-      this.onlineList.value = data;
-      console.log('onOnlineList:', this.onlineList.value, data);
+      this.onlineList.value = data.reduce((acc: string | any[], curr: any) => acc.includes(curr) ? acc : [...acc, curr], []);
     });
     
     return () => { 
       socket.off('onlineList');
+    }
+  }
+
+  onMessage(socket: any) {
+    if(!socket) return;
+    socket.on('dm', (data: any) => {
+      console.log('on dm', data);
+    });
+    return () => {
+      socket.off('dm');
     }
   }
 }

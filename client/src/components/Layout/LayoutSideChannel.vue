@@ -113,7 +113,6 @@ export default {
     function onSelectChannel(id) {
       const el = document.getElementById(id);
       el.classList.remove('hidden');
-      console.log(id, currentChannel.value);
       if (currentChannel.value && currentChannel.value !== id) {
         const curEl = document.getElementById(currentChannel.value);
         curEl?.classList.add('hidden');

@@ -99,17 +99,22 @@ export default {
     );
 
     // socket
+    const offOnlineList = ref('');
+    const offMessage = ref('');
     watch(
       () => route.params.channel,
       () => {
+        if (offOnlineList.value) offOnlineList.value();
+        if (offMessage.value) offMessage.value();
         if (!route.params.workspace) return;
         [socket, disconnect] = socketStore.useSocket(route.params.workspace);
-        if (!route.params.channel || !socket) return;
+        if (!route.params.channel || !socket || !globalChannels.value) return;
         socketStore.emitLoginUser(socket, {
           id: authState.loginResponse.id,
           channels: globalChannels.value.map(v => v.id),
         });
-        socketStore.onOnlineList(socket);
+        offOnlineList.value = socketStore.onOnlineList(socket);
+        offMessage.value = socketStore.onMessage(socket);
       },
     );
 

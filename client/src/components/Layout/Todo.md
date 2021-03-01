@@ -4,3 +4,6 @@
 
 - reactive로 할때, const a = reactive({});, a = 'a' 이런식으로 하면 a는 일반변수가 된다
 - reactive.a = 'a' 로 하든지 그냥 ref.value를 사용하자
+
+- https://github.com/mercs600/vue3-perfect-scrollbar
+- SOCKET.IO.CLIENT

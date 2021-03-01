@@ -1,13 +1,18 @@
 <template lang="">
   <header class="flex justify-between p-4 bg-blue-50 mb-2 rounded-lg shadow-lg px-10">
     <div class="">
-      <img :src="gravatar.url(userData.email, { s: '24px', d: 'retro' })" :alt="userData.nickname" />
+      <img
+        :src="gravatar.url(userData.email, { s: '24px', d: 'retro' })"
+        :alt="userData.nickname"
+        class="rounded-full"
+      />
       <span>{{ userData.nickname }}</span>
     </div>
     <div class="">
       <img
         :src="gravatar.url(authState.loginResponse.email, { s: '24px', d: 'retro' })"
         :alt="authState.loginResponse.nickname"
+        class="rounded-full"
       />
       <span>{{ authState.loginResponse.nickname }}</span>
     </div>
