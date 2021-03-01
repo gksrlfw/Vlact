@@ -49,7 +49,7 @@
 import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { axiosOptions, BASE_URL, globalChannels } from '@/store/GlobalVariable';
+import { axiosOptions, BASE_URL, globalChannels, globalMembers } from '@/store/GlobalVariable';
 import DMInfo from '@/components/Modal/DMInfo';
 import AccodionButton from '@/components/Button/AccodionButton';
 import IconUserAdd from '@/components/Icons/IconUserAdd';
@@ -81,6 +81,7 @@ export default {
           axiosOptions,
         );
         currentMembers.value = response.data;
+        globalMembers.value = response.data;
       } catch (err) {
         console.error(err.response);
       }

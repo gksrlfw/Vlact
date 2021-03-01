@@ -7,13 +7,13 @@
       <div v-for="chat in data" :key="chat.id" class="mb-2 flex">
         <div class="mr-3">
           <img
-            :src="gravatar.url(chat.Sender.email, { s: '24px', d: 'retro' })"
-            :alt="chat.Sender.nickname"
+            :src="gravatar.url(chat.User.email, { s: '24px', d: 'retro' })"
+            :alt="chat.User.nickname"
             class="rounded-full"
           />
         </div>
         <div class="">
-          <div class="font-bold px-2">{{ chat.Sender.nickname }}</div>
+          <div class="font-bold px-2">{{ chat.User.nickname }}</div>
           <div class="flex relative">
             <div v-html="chat.content" class="bg-blue-100 rounded-lg px-5 py-3 mr-3 font-bold hover:bg-blue-200"></div>
             <div class="absolute bottom-0 left-full text-sm w-24 text-gray-700 font-semibold mb-1">
@@ -21,8 +21,8 @@
             </div>
           </div>
         </div>
-        <!-- <div v-if="chat.Sender.email === authState.loginResponse.email" class="">
-        <div>{{ chat.Sender.nickname }}</div>
+        <!-- <div v-if="chat.User.email === authState.loginResponse.email" class="">
+        <div>{{ chat.User.nickname }}</div>
         <div class="flex">
           <div v-html="chat.content"></div>
           <div>{{ dayjs(chat.createdAt).format('h:mm A') }}</div>

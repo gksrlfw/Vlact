@@ -11,3 +11,4 @@ export const axiosOptions = {
 }
 
 export const globalChannels = ref('');
+export const globalMembers = ref('');
