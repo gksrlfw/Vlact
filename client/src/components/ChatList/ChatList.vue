@@ -16,7 +16,7 @@
           <div class="font-bold px-2">{{ chat.User.nickname }}</div>
           <div class="flex">
             <div v-html="chat.content" class="bg-blue-100 rounded-lg px-5 py-3 mr-3 font-bold hover:bg-blue-200"></div>
-            <div class="bottom-0 left-full text-sm w-24 text-gray-700 font-semibold mb-1">
+            <div class="absolute bottom-0 left-full text-sm w-24 text-gray-700 font-semibold mb-1">
               {{ dayjs(chat.createdAt).format('h:mm A') }}
             </div>
           </div>
