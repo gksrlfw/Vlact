@@ -6,7 +6,7 @@
     <div>
       <Layout />
     </div>
-    <div class="ml-80 h-5/6">
+    <div class="ml-80 h-5/6 overflow-auto">
       <router-view />
     </div>
   </section>

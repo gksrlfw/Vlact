@@ -4,7 +4,7 @@
       <button
         class="font-bold block mt-2 rounded-lg bg-blue-100  hover:bg-blue-100 focus:bg-gray-300 focus:outline-none focus:shadow-outline"
       >
-        <IconPlus class="h-10 w-10 p-1.5" @click="onClickCreateWorkspaceOpen" />
+        <IconPlus class="h-10 w-10 p-1.5" @click="onClickModalOpenIn" />
       </button>
     </div>
     <div>
@@ -19,9 +19,8 @@
     </div>
   </div>
   <WorkspaceInfo
-    :show-create-workspace="showCreateWorkspace"
-    @onClickCreateWorkspaceClose="onClickCreateWorkspaceClose"
-    @onClickCreateWorkspace="onClickCreateWorkspace"
+    @onClickModalCloseIn="onClickModalCloseIn"
+    @onClickModalCreateIn="onClickModalCreateIn"
     v-if="showCreateWorkspace"
   />
 </template>
@@ -48,50 +47,38 @@ export default {
       authState.loginResponse = await authStore.getAllInfo();
     });
 
-    function onClickCreateWorkspaceOpen() {
-      showCreateWorkspace.value = true;
-    }
-
-    function onClickCreateWorkspaceClose(currentValue) {
-      showCreateWorkspace.value = currentValue.value;
-    }
-
-    async function onClickCreateWorkspace({ currentValue, wName, wUrl }) {
+    async function onClickModalCreateIn({ currentValue, wName, wUrl }) {
       try {
         if (!wName.value) return;
         if (!wUrl.value) return;
-        // TODO
-        const response = await axios.post(
-          `${BASE_URL}/workspaces`,
-          {
-            workspace: wName.value,
-            url: wUrl.value,
-          },
-          axiosOptions,
-        );
+        const data = {
+          workspace: wName.value,
+          url: wUrl.value,
+        };
+        const response = await axios.post(`${BASE_URL}/workspaces`, data, axiosOptions);
         if (response.status !== 200) return alert('실패');
         authState.loginResponse = await authStore.getAllInfo();
-        showCreateWorkspace.value = currentValue.value;
+        showCreateWorkspace.value = currentValue;
       } catch (err) {
         console.error(err.response);
       }
     }
 
-    async function selectWorkspace(data) {
-      try {
-        console.log(`${BASE_URL}/${data.name}/channels`);
-        const response = await axios.get(`${BASE_URL}/workspaces/${data.name}/channels`, axiosOptions);
-        console.log(response.data);
-        router.push({ name: 'WorkspaceP', params: { workspace: data.name } });
-      } catch (err) {
-        console.error(err.response);
-      }
+    function selectWorkspace(data) {
+      router.push({ name: 'WorkspaceP', params: { workspace: data.name } });
+    }
+
+    function onClickModalOpenIn() {
+      showCreateWorkspace.value = true;
+    }
+    function onClickModalCloseIn(currentValue) {
+      showCreateWorkspace.value = currentValue;
     }
     return {
       showCreateWorkspace,
-      onClickCreateWorkspaceOpen,
-      onClickCreateWorkspaceClose,
-      onClickCreateWorkspace,
+      onClickModalOpenIn,
+      onClickModalCloseIn,
+      onClickModalCreateIn,
       authState,
       selectWorkspace,
     };

@@ -35,7 +35,7 @@
   </div>
 </template>
 <script>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import authStore from '@/store/AuthStore';
 
@@ -45,7 +45,6 @@ export default {
     const email = ref('');
     const password = ref('');
     const isEmptyValue = ref(false);
-    // const authStore = new AuthStore();
     const authState = authStore.getAuthState();
 
     function checkValidation() {
@@ -69,14 +68,6 @@ export default {
         console.error(err.response);
       }
     }
-
-    // torefs로 안넘겨도 watch로 확인할 수 있다!!
-    watch(
-      () => authState.loginResponse,
-      () => {
-        console.log(authState);
-      },
-    );
 
     return {
       email,

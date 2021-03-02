@@ -1,7 +1,7 @@
 <template lang="">
   <div class="flex items-center justify-between border-b-4">
-    <div class="font-bold px-4 py-2 mt-2">
-      DM
+    <div class="font-bold px-3 py-2 mt-2">
+      C MEMBERS
     </div>
     <div class="flex">
       <IconUserAdd
@@ -17,19 +17,12 @@
   </div>
   <div v-if="toggleAccordion">
     <div
-      v-for="data in currentMembers"
+      v-for="data in globalMembers"
       :key="data.id"
       class="flex justify-between ml-3 text-left font-semibold px-4 py-2 mt-2 rounded-lg hover:bg-blue-100 focus:bg-gray-300 focus:outline-none focus:shadow-outline"
       @click="onClickUser(route.params.channel + data.id)"
     >
-      <router-link
-        :to="{
-          name: 'DM',
-          params: { workspace: route.params.workspace, channel: route.params.channel, id: data.id },
-        }"
-        class="w-full"
-        >{{ data.nickname }}</router-link
-      >
+      <div class="w-full">{{ data.nickname }}</div>
       <IconUser
         :id="route.params.channel + data.id"
         class="w-4 h-4 mt-1 text-green-300"
@@ -38,18 +31,13 @@
       <IconUser :id="route.params.channel + data.id" class="w-4 h-4 mt-1" v-else />
     </div>
   </div>
-  <DMInfo
-    :show-d-m-modal="showDMModal"
-    @onClickDMInfoClose="onClickDMInfoClose"
-    @onClickDMCreate="onClickDMCreate"
-    v-if="showDMModal"
-  />
+  <DMInfo @onClickModalCloseIn="onClickModalCloseIn" @onClickModalCreateIn="onClickModalCreateIn" v-if="showDMModal" />
 </template>
 <script>
 import axios from 'axios';
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { axiosOptions, BASE_URL, globalChannels, globalChatDatas, globalMembers } from '@/store/GlobalVariable';
+import { axiosOptions, BASE_URL, globalChannels } from '@/store/GlobalVariable';
 import DMInfo from '@/components/Modal/DMInfo';
 import AccodionButton from '@/components/Button/AccodionButton';
 import IconUserAdd from '@/components/Icons/IconUserAdd';
@@ -65,14 +53,14 @@ export default {
     IconUser,
   },
   setup() {
-    const showDMModal = ref(false);
     const route = useRoute();
-    const currentMembers = ref([]);
+    const showDMModal = ref(false);
+    const globalMembers = ref([]);
     const toggleAccordion = ref(false);
     const currentUser = ref('');
     const onlineList = socketStore.getOnlineList();
     const authState = authStore.getAuthState();
-    let [socket, disconnect] = ['', ''];
+    const offOnlineList = ref('');
 
     async function getMembers() {
       try {
@@ -80,45 +68,11 @@ export default {
           `${BASE_URL}/workspaces/${route.params.workspace}/channels/${route.params.channel}/members`,
           axiosOptions,
         );
-        currentMembers.value = response.data;
         globalMembers.value = response.data;
       } catch (err) {
         console.error(err.response);
       }
     }
-
-    // url이 바뀌면 getMembers!
-    watch(
-      () => route.params.channel,
-      async () => {
-        if (!route.params.channel) {
-          currentMembers.value = [];
-          return;
-        }
-        await getMembers();
-      },
-    );
-
-    // socket
-    const offOnlineList = ref('');
-    const offMessage = ref('');
-    watch(
-      () => route.params.channel,
-      () => {
-        // if (offOnlineList.value) offOnlineList.value();
-        // if (offMessage.value) offMessage.value();
-        if (!route.params.workspace) return;
-        [socket, disconnect] = socketStore.useSocket(route.params.workspace);
-        if (!route.params.channel || !socket || !globalChannels.value) return;
-        socketStore.emitLoginUser(socket, {
-          id: authState.loginResponse.id,
-          channels: globalChannels.value.map(v => v.id),
-        });
-        socketStore.onMessageChannel(socket);
-        offOnlineList.value = socketStore.onOnlineList(socket);
-        // offMessage.value = socketStore.onMessage(socket);
-      },
-    );
 
     function checkOnlineList(curId) {
       let ok = false;
@@ -129,15 +83,25 @@ export default {
       return ok;
     }
 
+    function onClickUser(id) {
+      const el = document.getElementById(id);
+      el.classList.add('text-gray-500');
+      if (currentUser.value && currentUser.value !== id) {
+        const curEl = document.getElementById(currentUser.value);
+        curEl?.classList.remove('text-gray-500');
+      }
+      currentUser.value = id;
+    }
+
     function onClickDMOpen() {
       showDMModal.value = true;
     }
 
-    function onClickDMInfoClose(currentValue) {
+    function onClickModalCloseIn(currentValue) {
       showDMModal.value = currentValue.value;
     }
 
-    async function onClickDMCreate({ currentValue, user }) {
+    async function onClickModalCreateIn({ currentValue, user }) {
       try {
         if (!user.value) return;
         await axios.post(
@@ -148,29 +112,45 @@ export default {
           axiosOptions,
         );
         await getMembers();
-        showDMModal.value = currentValue.value;
+        showDMModal.value = currentValue;
       } catch (err) {
         console.error(err.response);
       }
     }
 
-    function onClickUser(id) {
-      const el = document.getElementById(id);
-      el.classList.add('text-red-500');
-      if (currentUser.value && currentUser.value !== id) {
-        const curEl = document.getElementById(currentUser.value);
-        curEl?.classList.remove('text-red-500');
-      }
-      currentUser.value = id;
-    }
-
+    // url이 바뀌면 getMembers!
+    watch(
+      () => route.params.channel,
+      async () => {
+        if (!route.params.channel) {
+          globalMembers.value = [];
+          return;
+        }
+        await getMembers();
+      },
+    );
+    // socket
+    watch(
+      () => route.params.channel,
+      () => {
+        if (!route.params.workspace) return;
+        const [socket, disconnect] = socketStore.useSocket(route.params.workspace);
+        if (!route.params.channel || !socket || !globalChannels.value) return;
+        socketStore.emitLoginUser(socket, {
+          id: authState.loginResponse.id,
+          channels: globalChannels.value.map(v => v.id),
+        });
+        socketStore.onMessageChannel(socket);
+        offOnlineList.value = socketStore.onOnlineList(socket);
+      },
+    );
     return {
       onClickDMOpen,
       showDMModal,
-      onClickDMInfoClose,
-      onClickDMCreate,
+      onClickModalCloseIn,
+      onClickModalCreateIn,
       route,
-      currentMembers,
+      globalMembers,
       toggleAccordion,
       onClickUser,
       onlineList,

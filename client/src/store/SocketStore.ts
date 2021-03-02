@@ -12,7 +12,7 @@ export class SocketStore {
   onDisconnect(socket: any) {
     return () => {
         socket.emit('disconnect', () => {
-        console.log('연결종료');
+          console.log('연결종료');
       });
     }
   }
@@ -20,8 +20,6 @@ export class SocketStore {
   private disconnected(workspace: string, disconnect: any) {
     if(workspace && this.sockets[workspace]) {      
       disconnect = this.sockets[workspace].disconnect();
-      // disconnect = this.onDisconnect(this.sockets[workspace]);
-      console.log(disconnect);
       delete this.sockets[workspace];
     }
   }
@@ -49,9 +47,7 @@ export class SocketStore {
     if(!workspace) return [undefined, this.disconnect];
     this.disconnected(workspace, this.disconnect);
 
-    if(!this.sockets[workspace]) {
-      console.log("여기오니??");
-      
+    if(!this.sockets[workspace]) {      
       this.sockets[workspace] = io.connect(`${SOCKET_URL}/ws-${workspace}`, {
         transports: ['websocket']
       });
@@ -76,10 +72,8 @@ export class SocketStore {
   }
 
   onMessage(socket: any) {
-    console.log('???', socket);
     if(!socket) return;
     socket.on('dm', (data: any) =>{
-      console.log('data', data);
       this.newChat.value = data;
     });
     return () => {
@@ -90,31 +84,12 @@ export class SocketStore {
   onMessageChannel(socket: any) {
     if(!socket) return;
     socket.on('message', (data: never) => {
-      // if (data.SenderId !== Number(id) || userid === Number(id)) return;
-      // globalChatDatas.value.unshift(data);
       globalChatDatas.value = data;      
     });
     return () => {
       socket.off('message');
     }
   }
-  // onMessageT(socket: any, id: any, userid: any, chatDatas: any) {
-  //   console.log('???',socket);
-    
-  //   if(!socket) return;
-  //   socket.on('dm', (data: any) => {
-  //     this.onTrigger(data, id, userid, chatDatas)
-  //   });
-  //   return () => {
-  //     socket.off('dm');
-  //   }
-  // }
-  // onTrigger(data: any, id: any, userid: any, chatDatas: any) {
-  //   console.log(data.SenderId, id, userid);
-  //   if (data.SenderId !== Number(id) || userid === Number(id)) return;
-  //   chatDatas.value.unshift(data);
-  //   console.log(chatDatas.value[0]);
-  // }
 }
 
 const socketStore = new SocketStore();

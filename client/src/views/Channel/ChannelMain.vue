@@ -1,6 +1,6 @@
 <template lang="">
-  <div>
-    channel
+  <div class="text-2xl font-extrabold">
+    SELECT CHANNEL YOU WANT TO CHAT!
   </div>
 </template>
 <script>

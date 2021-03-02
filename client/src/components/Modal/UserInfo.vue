@@ -2,7 +2,7 @@
   <div class="fixed z-10 inset-0 overflow-y-auto">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-        <div class="absolute inset-0 bg-gray-500 opacity-75" @click="onClickClose"></div>
+        <div class="absolute inset-0 bg-gray-500 opacity-75" @click="onClickModalClose"></div>
       </div>
 
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
@@ -31,53 +31,39 @@
         </div>
         <div class=" px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
           <ModalButton content="LOGOUT" @click="logout" />
-          <ModalButton content="CLOSE" @click="onClickClose" />
+          <ModalButton content="CLOSE" @click="onClickModalClose" />
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { toRefs, ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import authStore from '@/store/AuthStore';
 import ModalButton from '@/components/Button/ModalButton';
+import { BaseModal } from '@/components/Modal/BaseModal';
 
 export default {
   components: {
     ModalButton,
   },
-  props: {
-    showUserMenu: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ['onClickClose', 'logout'],
-  setup(props, { emit }) {
-    const { showUserMenu } = toRefs(props);
-    let authState = authStore.getAuthState();
-
-    const currentValue = ref('');
-    function onClickClose() {
-      console.log(showUserMenu.value);
-      currentValue.value = !showUserMenu.value;
-      window.onkeydown = null;
-      emit('onClickClose', currentValue);
+  emits: ['onClickModalCloseIn', 'logout'],
+  setup(_, { emit }) {
+    const baseModal = new BaseModal(emit);
+    const authState = authStore.getAuthState();
+    function onClickModalClose() {
+      baseModal.onClickModalClose();
     }
     async function logout() {
-      currentValue.value = !showUserMenu.value;
-      emit('logout', currentValue);
+      emit('logout', false);
     }
 
     onMounted(() => {
-      authState = authStore.getAuthState();
-      window.onkeydown = e => {
-        if (e.key === 'Escape') onClickClose();
-      };
+      baseModal.onPressEsc();
     });
 
     return {
-      onClickClose,
+      onClickModalClose,
       authState,
       logout,
     };

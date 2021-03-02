@@ -2,7 +2,7 @@
   <div class="fixed z-10 inset-0 overflow-y-auto">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-        <div class="absolute inset-0 bg-gray-500 opacity-75" @click="onClickCreateWorkspaceClose"></div>
+        <div class="absolute inset-0 bg-gray-500 opacity-75" @click="onClickModalClose"></div>
       </div>
 
       <!-- This element is to trick the browser into centering the modal contents. -->
@@ -31,50 +31,41 @@
           </div>
         </div>
         <div class=" px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <ModalButton content="CREATE" @click="onClickCreateWorkspace" />
-          <ModalButton content="CLOSE" @click="onClickCreateWorkspaceClose" />
+          <ModalButton content="CREATE" @click="onClickModalCreate" />
+          <ModalButton content="CLOSE" @click="onClickModalClose" />
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { toRefs, ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import ModalButton from '@/components/Button/ModalButton';
+import { BaseModal } from '@/components/Modal/BaseModal';
+
 export default {
   components: {
     ModalButton,
   },
-  props: {
-    showCreateWorkspace: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ['onClickCreateWorkspaceClose', 'onClickCreateWorkspace'],
-  setup(props, { emit }) {
-    const { showCreateWorkspace } = toRefs(props);
-    const currentValue = ref('');
+  emits: ['onClickModalCloseIn', 'onClickModalCreateIn'],
+  setup(_, { emit }) {
+    const baseModal = new BaseModal(emit);
     const wName = ref('');
     const wUrl = ref('');
-    function onClickCreateWorkspaceClose() {
-      currentValue.value = !showCreateWorkspace.value;
-      window.onkeydown = null;
-      emit('onClickCreateWorkspaceClose', currentValue);
+
+    function onClickModalClose() {
+      baseModal.onClickModalClose();
     }
 
-    function onClickCreateWorkspace() {
-      currentValue.value = !showCreateWorkspace.value;
-      emit('onClickCreateWorkspace', { currentValue, wName, wUrl });
+    function onClickModalCreate() {
+      baseModal.onClickModalCreate({ currentValue: false, wName, wUrl });
     }
     onMounted(() => {
-      window.onkeydown = e => {
-        if (e.key === 'Escape') onClickCreateWorkspaceClose();
-      };
+      baseModal.onPressEsc();
     });
     return {
-      onClickCreateWorkspace,
-      onClickCreateWorkspaceClose,
+      onClickModalCreate,
+      onClickModalClose,
       wName,
       wUrl,
     };

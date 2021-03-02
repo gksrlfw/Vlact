@@ -12,10 +12,15 @@
     </div>
     <div class="col-span-3 mt-1" v-else>비로그인!!!!!</div>
   </div>
-  <UserInfo :show-user-menu="showUserMenu" @onClickClose="onClickClose" @logout="logout" v-if="showUserMenu" />
+  <UserInfo
+    :show-user-menu="showUserMenu"
+    @onClickModalCloseIn="onClickModalCloseIn"
+    @logout="logout"
+    v-if="showUserMenu"
+  />
 </template>
 <script>
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import gravatar from 'gravatar';
 import authStore from '@/store/AuthStore';
 import UserInfo from '@/components/Modal/UserInfo.vue';
@@ -28,24 +33,20 @@ export default {
   setup() {
     const router = useRouter();
     const showUserMenu = ref(false);
-    let authState = authStore.getAuthState();
-    onMounted(() => {
-      authState = authStore.getAuthState();
-    });
+    const authState = authStore.getAuthState();
 
     function onClickUserProfile() {
       showUserMenu.value = !showUserMenu.value;
-      console.log(showUserMenu.value);
     }
 
-    function onClickClose(currentValue) {
-      showUserMenu.value = currentValue.value;
+    function onClickModalCloseIn(currentValue) {
+      showUserMenu.value = currentValue;
     }
 
     async function logout(currentValue) {
       try {
         await authStore.logout();
-        showUserMenu.value = currentValue.value;
+        showUserMenu.value = currentValue;
         return router.push({ name: 'Login' });
       } catch (err) {
         console.error(err);
@@ -57,7 +58,7 @@ export default {
       authState,
       showUserMenu,
       onClickUserProfile,
-      onClickClose,
+      onClickModalCloseIn,
       logout,
     };
   },

@@ -23,7 +23,7 @@ export default {
     ModalButton,
   },
   emits: ['onKeyUpChat'],
-  setup(props, { emit }) {
+  setup(_, { emit }) {
     const currentValue = ref('');
     const textareaRef = ref('');
     const result = ref('');
@@ -35,9 +35,6 @@ export default {
     function onKeyUpChat(e) {
       if (e.shiftKey) {
         window.scrollTo({ left: 0, top: document.body.scrollHeight + 20, behavior: 'smooth' });
-        // currentValue.value += '\n';
-        if (currentValue.value.includes('\n')) console.log('hahahahah');
-        console.log(currentValue.value, 'asdf', currentValue.value.length);
         return;
       }
       result.value = currentValue.value.replace(/(?:\r\n|\r|\n)/g, '<br/>');

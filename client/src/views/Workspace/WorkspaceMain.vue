@@ -1,6 +1,6 @@
 <template lang="">
-  <div>
-    workspace
+  <div class="text-2xl font-extrabold">
+    SELECT WORKSPACE YOU WANT TO CHAT!
   </div>
 </template>
 <script>

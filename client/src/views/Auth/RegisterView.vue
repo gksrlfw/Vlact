@@ -60,23 +60,19 @@
 </template>
 <script lang="ts">
 import { ref } from 'vue';
-import axios from 'axios';
 import IconArrowdown from '@/components/Icons/IconArrowdown.vue';
-import { useRouter } from 'vue-router';
 import authStore from '@/store/AuthStore';
 export default {
   components: {
     IconArrowdown,
   },
   setup() {
-    const router = useRouter();
     const email = ref('');
     const nickname = ref('');
     const password = ref('');
     const confirmPassword = ref('');
     const isEmptyValue = ref(false);
     const isMatchedPassword = ref(false);
-    // const authStore = new AuthStore();
     const authState = authStore.getAuthState();
 
     function checkValidation() {
@@ -100,7 +96,6 @@ export default {
         if (!checkValidation()) return;
         const data = { email: email.value, nickname: nickname.value, password: password.value };
         await authStore.register(data);
-        console.log(authState);
       } catch (err) {
         console.error(err.response);
       }

@@ -1,21 +1,20 @@
 <template lang="">
   <div class="md:container mx-auto pl-20 pr-32 h-full">
     <ChannelHeader />
-    <ChatList class="" :chat-datas="chatDatas" :scrollbar-ref="scrollbarRef" id="scrollbarRef" />
+    <ChatList class="z-0" :chat-datas="chatDatas" :scrollbar-ref="scrollbarRef" id="scrollbarRef" />
     <ChatBox class="" @on-key-up-chat="onKeyUpChat" />
   </div>
 </template>
 <script>
 import gravatar from 'gravatar';
 import axios from 'axios';
-import { onMounted, ref, watch, computed } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { axiosOptions, BASE_URL, globalChatDatas, globalRef, PAGE_SIZE } from '@/store/GlobalVariable';
+import { axiosOptions, BASE_URL, globalChatDatas, PAGE_SIZE } from '@/store/GlobalVariable';
 import authStore from '@/store/AuthStore';
 import ChatBox from '@/components/ChatBox/ChatBox';
 import ChatList from '@/components/ChatList/ChatList';
 import ChannelHeader from '@/views/Channel/ChannelHeader';
-import socketStore from '@/store/SocketStore';
 export default {
   components: { ChatBox, ChatList, ChannelHeader },
   setup() {
@@ -28,7 +27,6 @@ export default {
     const isReachingEnd = ref(false);
     let scrollbarRef = null;
     let prevScroll = null;
-    // let [socket, disconnect] = ['', ''];
 
     function sets(data) {
       isEmpty.value = !data || data.length === 0 || false;
@@ -122,7 +120,6 @@ export default {
       async () => {
         if (globalChatDatas.value.Channel.name !== route.params.channel) return;
         chatDatas.value.unshift(globalChatDatas.value);
-        console.log(chatDatas.value, route.params.channel);
         setTimeout(() => {
           scrollbarRef.scrollTo(0, scrollbarRef.scrollHeight);
         }, 0);
@@ -136,6 +133,7 @@ export default {
       authState,
       onKeyUpChat,
       chatDatas,
+      scrollbarRef,
     };
   },
 };

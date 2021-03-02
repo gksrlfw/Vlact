@@ -2,7 +2,7 @@
   <div class="fixed z-10 inset-0 overflow-y-auto">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-        <div class="absolute inset-0 bg-gray-500 opacity-75" @click="onClickWsMembersClose"></div>
+        <div class="absolute inset-0 bg-gray-500 opacity-75" @click="onClickModalClose"></div>
       </div>
 
       <!-- This element is to trick the browser into centering the modal contents. -->
@@ -15,7 +15,15 @@
       >
         <div class="bg-blue-50 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <div class="mt-3 text-center sm:mt-0 sm:text-left px-10 py-6">
-            <h3 class="mb-10 text-2xl text-center font-bold">CREATE WORKSPACE</h3>
+            <div class="mb-10">
+              <h3 class="mb-4 text-2xl text-center font-bold">INVITE MEMBER IN WORKSPACE</h3>
+              <div class="">
+                <h5 class="mr-4 font-semibold">CURRENT MEMBERS</h5>
+                <span v-for="member in currentMembers" :key="member.id" class="ml-2 font-semibold">
+                  {{ member.nickname }}
+                </span>
+              </div>
+            </div>
             <input
               type="text"
               class="border border-gray-300 w-full p-3 rounded mb-6"
@@ -25,50 +33,47 @@
           </div>
         </div>
         <div class=" px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <ModalButton content="CREATE" @click="onClickWsMembersCreate" />
-          <ModalButton content="CLOSE" @click="onClickWsMembersClose" />
+          <ModalButton content="CREATE" @click="onClickModalCreate" />
+          <ModalButton content="CLOSE" @click="onClickModalClose" />
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import { toRefs, ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
+import { BaseModal } from '@/components/Modal/BaseModal';
 import ModalButton from '@/components/Button/ModalButton';
+
 export default {
   components: {
     ModalButton,
   },
   props: {
-    showWsMembersModal: {
-      type: Boolean,
-      default: false,
+    currentMembers: {
+      type: Array,
     },
   },
-  emits: ['onClickWsMembersClose', 'onClickWsMembersCreate'],
-  setup(props, { emit }) {
-    const { showWsMembersModal } = toRefs(props);
-    const currentValue = ref('');
+  emits: ['onClickModalCloseIn', 'onClickModalCreateIn'],
+  setup(_, { emit }) {
+    const baseModal = new BaseModal(emit);
     const wName = ref('');
-    function onClickWsMembersClose() {
-      currentValue.value = !showWsMembersModal.value;
-      window.onkeydown = null;
-      emit('onClickWsMembersClose', currentValue);
+
+    onMounted(() => {
+      baseModal.onPressEsc();
+    });
+
+    function onClickModalClose() {
+      baseModal.onClickModalClose();
     }
 
-    function onClickWsMembersCreate() {
-      currentValue.value = !showWsMembersModal.value;
-      console.log(currentValue, wName);
-      emit('onClickWsMembersCreate', { currentValue, wName });
+    function onClickModalCreate() {
+      baseModal.onClickModalCreate({ currentValue: false, wName });
     }
-    onMounted(() => {
-      window.onkeydown = e => {
-        if (e.key === 'Escape') onClickWsMembersClose();
-      };
-    });
+
     return {
-      onClickWsMembersCreate,
-      onClickWsMembersClose,
+      onClickModalCreate,
+      onClickModalClose,
       wName,
     };
   },

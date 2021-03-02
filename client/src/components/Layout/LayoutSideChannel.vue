@@ -17,7 +17,7 @@
   </div>
   <div v-if="toggleAccordion">
     <div
-      v-for="data in currentChannels"
+      v-for="data in globalChannels"
       :key="data.id"
       class="flex justify-between ml-3 text-left font-semibold px-4 py-2 mt-2 rounded-lg hover:bg-blue-100 focus:bg-gray-300 focus:outline-none focus:shadow-outline"
       @click="onSelectChannel(route.params.workspace + data.id)"
@@ -35,9 +35,8 @@
     </div>
   </div>
   <ChannelInfo
-    :show-channel-modal="showChannelModal"
-    @onClickChannelInfoClose="onClickChannelInfoClose"
-    @onClickChannelCreate="onClickChannelCreate"
+    @onClickModalCloseIn="onClickModalCloseIn"
+    @onClickModalCreateIn="onClickModalCreateIn"
     v-if="showChannelModal"
   />
 </template>
@@ -50,7 +49,6 @@ import ChannelInfo from '@/components/Modal/ChannelInfo';
 import AccodionButton from '@/components/Button/AccodionButton';
 import IconPlus from '@/components/Icons/IconPlus';
 import IconCheckCircle from '@/components/Icons/IconCheckCircle';
-import authStore from '@/store/AuthStore';
 
 export default {
   components: {
@@ -60,16 +58,14 @@ export default {
     IconCheckCircle,
   },
   setup() {
-    const showChannelModal = ref(false);
     const route = useRoute();
-    const currentChannels = ref([]);
-    const toggleAccordion = ref(false);
+    const showChannelModal = ref(false);
+    const toggleAccordion = ref(true);
     const currentChannel = ref('');
-    
+
     async function getChannels() {
       try {
         const response = await axios.get(`${BASE_URL}/workspaces/${route.params.workspace}/channels`, axiosOptions);
-        currentChannels.value = response.data;
         globalChannels.value = response.data;
       } catch (err) {
         console.error(err.response);
@@ -89,11 +85,11 @@ export default {
       showChannelModal.value = true;
     }
 
-    function onClickChannelInfoClose(currentValue) {
+    function onClickModalCloseIn(currentValue) {
       showChannelModal.value = currentValue.value;
     }
 
-    async function onClickChannelCreate({ currentValue, cName }) {
+    async function onClickModalCreateIn({ currentValue, cName }) {
       try {
         if (!cName.value) return;
         await axios.post(
@@ -104,7 +100,7 @@ export default {
           axiosOptions,
         );
         await getChannels();
-        showChannelModal.value = currentValue.value;
+        showChannelModal.value = currentValue;
       } catch (err) {
         console.error(err.response);
       }
@@ -123,10 +119,10 @@ export default {
     return {
       onClickChannelOpen,
       showChannelModal,
-      onClickChannelInfoClose,
-      onClickChannelCreate,
+      onClickModalCloseIn,
+      onClickModalCreateIn,
       route,
-      currentChannels,
+      globalChannels,
       toggleAccordion,
       onSelectChannel,
     };
