@@ -17,7 +17,12 @@
    채널에 초대되지 않았더라도 같은 워크스페이스 안에 있으면 해당 채팅을 볼수있다...
    -> 채널에 초대되지 않으면 못보게... -> 아니면 채널이 안보이게..
 
-2) 모달 공통부분 빼내기
+2. 모달 공통부분 빼내기
 
-- https://github.com/mercs600/vue3-perfect-scrollbar
-- SOCKET.IO.CLIENT
+===============================
+
+- absolute: 부모중 relative, (static 빼고)를 기준으로 top, bot ... 가능해진다
+- display: table, table-cell 한 뒤에 vertical-align 하자
+
+* https://github.com/mercs600/vue3-perfect-scrollbar
+* SOCKET.IO.CLIENT

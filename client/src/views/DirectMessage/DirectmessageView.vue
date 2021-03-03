@@ -2,7 +2,7 @@
   <div class="md:container mx-auto pl-20 pr-32 h-full">
     <DirectmessageHeader :user-data="userData" :auth-state="authState" v-if="userData" />
     <ChatList class="" :chat-datas="chatDatas" id="scrollbarRef" />
-    <ChatBox class="" @on-key-up-chat="onKeyUpChat" />
+    <ChatInput class="" @on-key-up-chat="onKeyUpChat" />
   </div>
 </template>
 <script>
@@ -12,12 +12,12 @@ import { onMounted, ref, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { axiosOptions, BASE_URL, PAGE_SIZE } from '@/store/GlobalVariable';
 import authStore from '@/store/AuthStore';
-import ChatBox from '@/components/ChatBox/ChatBox';
+import ChatInput from '@/components/ChatInput/ChatInput';
 import ChatList from '@/components/ChatList/ChatList';
 import DirectmessageHeader from '@/views/DirectMessage/DirectmessageHeader';
 import socketStore from '@/store/SocketStore';
 export default {
-  components: { ChatBox, ChatList, DirectmessageHeader },
+  components: { ChatInput, ChatList, DirectmessageHeader },
   setup() {
     const route = useRoute();
     const authState = authStore.getAuthState();

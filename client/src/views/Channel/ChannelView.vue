@@ -2,7 +2,7 @@
   <div class="md:container mx-auto pl-20 pr-32 h-full">
     <ChannelHeader />
     <ChatList class="z-0" :chat-datas="chatDatas" :scrollbar-ref="scrollbarRef" id="scrollbarRef" />
-    <ChatBox class="" @on-key-up-chat="onKeyUpChat" />
+    <ChatInput class="" @on-key-up-chat="onKeyUpChat" />
   </div>
 </template>
 <script>
@@ -12,11 +12,11 @@ import { onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { axiosOptions, BASE_URL, globalChatDatas, PAGE_SIZE } from '@/store/GlobalVariable';
 import authStore from '@/store/AuthStore';
-import ChatBox from '@/components/ChatBox/ChatBox';
+import ChatInput from '@/components/ChatInput/ChatInput';
 import ChatList from '@/components/ChatList/ChatList';
 import ChannelHeader from '@/views/Channel/ChannelHeader';
 export default {
-  components: { ChatBox, ChatList, ChannelHeader },
+  components: { ChatInput, ChatList, ChannelHeader },
   setup() {
     const route = useRoute();
     const authState = authStore.getAuthState();

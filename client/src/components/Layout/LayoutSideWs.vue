@@ -4,14 +4,14 @@
       <button
         class="font-bold block mt-2 rounded-lg bg-blue-100  hover:bg-blue-100 focus:bg-gray-300 focus:outline-none focus:shadow-outline"
       >
-        <IconPlus class="h-10 w-10 p-1.5" @click="onClickModalOpenIn" />
+        <IconPlus class="h-10 w-12 p-1.5" @click="onClickModalOpenIn" />
       </button>
     </div>
     <div>
       <button
         v-for="data in authState.loginResponse.Workspaces"
         :key="data.id"
-        class="font-bold block px-4 py-2 mt-2 rounded-lg bg-blue-100 hover:bg-blue-200 focus:bg-gray-300 focus:outline-none focus:shadow-outline"
+        class="w-12 text-center font-semibold text-sm block px-4 py-2 mt-2 rounded-lg bg-blue-100 hover:bg-blue-200 focus:bg-gray-300 focus:outline-none focus:shadow-outline"
         @click="selectWorkspace(data)"
       >
         {{ data.name[0] }}
